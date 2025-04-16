@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Hat Hacker AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0f0f0f;
+            --secondary-color: #1a1a1a;
+            --accent-color: #00ff00;
+            --text-color: #e0e0e0;
+            --shadow-color: rgba(0, 255, 0, 0.3);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .logo i {
+            color: var(--accent-color);
+            font-size: 2rem;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, var(--accent-color), #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 8px var(--shadow-color);
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            border-left: 1px solid rgba(0, 255, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--secondary-color);
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--secondary-color);
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: var(--accent-color);
+            border-radius: 4px;
+        }
+        
+        .message {
+            margin-bottom: 1.5rem;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 12px 12px 0 12px;
+            padding: 0.8rem 1.2rem;
+            margin-left: auto;
+        }
+        
+        .ai-message {
+            align-self: flex-start;
+            background-color: var(--secondary-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px 12px 12px 0;
+            padding: 0.8rem 1.2rem;
+            position: relative;
+        }
+        
+        .ai-message::before {
+            content: "BHHAI";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-size: 0.7rem;
+            background-color: var(--secondary-color);
+            padding: 0 5px;
+            color: var(--accent-color);
+        }
+        
+        .input-area {
+            padding: 1rem;
+            background-color: var(--secondary-color);
+            border-top: 1px solid rgba(0, 255, 0, 0.1);
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .input-field {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 20px;
+            padding: 0.8rem 1.2rem;
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px var(--shadow-color);
+        }
+        
+        .send-btn {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 12px var(--shadow-color);
+        }
+        
+        .send-btn i {
+            font-size: 1.2rem;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 0.8rem 1.2rem;
+            background-color: var(--secondary-color);
+            border-radius: 12px 12px 12px 0;
+            margin-bottom: 1.5rem;
+            align-self: flex-start;
+            width: fit-content;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .search-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .search-result a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        
+        .search-result a:hover {
+            text-decoration: underline;
+        }
+        
+        .search-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .search-snippet {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+        
+        .powered-by {
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 0.5rem;
+            color: #666;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .sidebar-title {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+        }
+        
+        .history-item {
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .history-item:hover {
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+        
+        .settings-btn {
+            margin-top: auto;
+            padding: 0.8rem;
+            background-color: rgba(0, 255, 0, 0.1);
+            border: none;
+            border-radius: 4px;
+            color: var(--accent-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .settings-btn:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 150px;
+                overflow-y: auto;
+                border-left: none;
+                border-bottom: 1px solid rgba(0, 255, 0, 0.1);
+            }
+            
+            .settings-btn {
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-code"></i>
+            <h1>Black Hat Hacker AI</h1>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                    سلام، من Black Hat Hacker AI هستم. هر سوالی داری از من بپرس تا در گوگل برات جستجو کنم.
+                    <div class="powered-by">Powered by Google Search</div>
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <input type="text" class="input-field" id="user-input" placeholder="سوال خود را اینجا بنویسید..." autocomplete="off">
+                <button class="send-btn" id="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">جستجوهای اخیر</div>
+                <div id="history-list"></div>
+            </div>
+            
+            <button class="settings-btn">
+                <i class="fas fa-cog"></i>
+                تنظیمات
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const typingIndicator = document.getElementById('typing-indicator');
+            const historyList = document.getElementById('history-list');
+            
+            // Load chat history from localStorage
+            let chatHistory = JSON.parse(localStorage.getItem('blackHatHackerAI_chatHistory')) || [];
+            let searchHistory = JSON.parse(localStorage.getItem('blackHatHackerAI_searchHistory')) || [];
+            
+            // Display initial chat history
+            if (chatHistory.length > 0) {
+                chatHistory.forEach(msg => {
+                    addMessage(msg.role, msg.content, msg.searchResults);
+                });
+            }
+            
+            // Display search history
+            updateHistoryList();
+            
+            // Send message when button is clicked
+            sendBtn.addEventListener('click', sendMessage);
+            
+            // Send message when Enter is pressed
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+                
+                // Add user message to chat
+                addMessage('user', message);
+                
+                // Add to search history
+                if (!searchHistory.includes(message)) {
+                    searchHistory.unshift(message);
+                    if (searchHistory.length > 10) searchHistory.pop();
+                    localStorage.setItem('blackHatHackerAI_searchHistory', JSON.stringify(searchHistory));
+                    updateHistoryList();
+                }
+                
+                // Clear input
+                userInput.value = '';
+                
+                // Show typing indicator
+                typingIndicator.style.display = 'block';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Simulate AI thinking
+                setTimeout(() => {
+                    // Hide typing indicator
+                    typingIndicator.style.display = 'none';
+                    
+                    // Perform Google search (in a real implementation, you would use a backend API)
+                    const searchResults = simulateGoogleSearch(message);
+                    
+                    // Add AI response
+                    addMessage('ai', `نتایج جستجو برای: "${message}"`, searchResults);
+                    
+                    // Save to chat history
+                    chatHistory.push({ role: 'user', content: message });
+                    chatHistory.push({ 
+                        role: 'ai', 
+                        content: `نتایج جستجو برای: "${message}"`,
+                        searchResults: searchResults
+                    });
+                    
+                    // Keep only the last 20 messages (10 pairs)
+                    if (chatHistory.length > 20) {
+                        chatHistory = chatHistory.slice(chatHistory.length - 20);
+                    }
+                    
+                    localStorage.setItem('blackHatHackerAI_chatHistory', JSON.stringify(chatHistory));
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1500);
+            }
+            
+            function addMessage(role, content, searchResults = null) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${role}-message`;
+                messageDiv.textContent = content;
+                
+                if (role === 'ai' && searchResults) {
+                    const resultsContainer = document.createElement('div');
+                    resultsContainer.className = 'search-results';
+                    
+                    searchResults.forEach(result => {
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'search-result';
+                        
+                        const title = document.createElement('div');
+                        title.className = 'search-title';
+                        const titleLink = document.createElement('a');
+                        titleLink.href = result.link;
+                        titleLink.target = '_blank';
+                        titleLink.textContent = result.title;
+                        title.appendChild(titleLink);
+                        
+                        const snippet = document.createElement('div');
+                        snippet.className = 'search-snippet';
+                        snippet.textContent = result.snippet;
+                        
+                        resultDiv.appendChild(title);
+                        resultDiv.appendChild(snippet);
+                        resultsContainer.appendChild(resultDiv);
+                    });
+                    
+                    const poweredBy = document.createElement('div');
+                    poweredBy.className = 'powered-by';
+                    poweredBy.textContent = 'Powered by Google Search';
+                    
+                    messageDiv.appendChild(resultsContainer);
+                    messageDiv.appendChild(poweredBy);
+                }
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function updateHistoryList() {
+                historyList.innerHTML = '';
+                searchHistory.forEach(query => {
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.textContent = query;
+                    item.addEventListener('click', () => {
+                        userInput.value = query;
+                        userInput.focus();
+                    });
+                    historyList.appendChild(item);
+                });
+            }
+            
+            // This is a simulation - in a real implementation, you would need a backend API
+            // to perform actual Google searches (note: scraping Google is against their ToS)
+            function simulateGoogleSearch(query) {
+                // In a real app, you would use:
+                // 1. Google Custom Search JSON API
+                // 2. Or a backend service that performs the search
+                
+                // For demo purposes, we return mock results
+                return [
+                    {
+                        title: `نتایج جستجو برای ${query} - Google Search`,
+                        link: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+                        snippet: `این نتایج جستجو برای "${query}" است. در یک پیاده‌سازی واقعی، این‌جا نتایج واقعی از گوگل نمایش داده می‌شد.`
+                    },
+                    {
+                        title: `صفحه ویکی‌پدیا درباره ${query}`,
+                        link: `https://fa.wikipedia.org/wiki/${encodeURIComponent(query)}`,
+                        snippet: `صفحه ویکی‌پدیا درباره "${query}". این یک نتیجه شبیه‌سازی شده است.`
+                    },
+                    {
+                        title: `آموزش ${query} - سایت آموزشی نمونه`,
+                        link: `https://example.com/tutorial/${encodeURIComponent(query)}`,
+                        snippet: `آموزش کامل درباره ${query} با مثال‌های عملی. این یک نتیجه نمونه است.`
+                    }
+                ];
+            }
+            
+            // Focus input on load
+            userInput.focus();
+        });
+    </script>
+</body>
+</html>
